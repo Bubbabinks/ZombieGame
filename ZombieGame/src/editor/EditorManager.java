@@ -20,6 +20,7 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
 import main.Manager;
+import menu.MenuManager;
 import world.FileManager;
 
 public class EditorManager extends JPanel {
@@ -65,8 +66,15 @@ public class EditorManager extends JPanel {
 		mapWidth = 0;
 		while (!successful) {
 			try {
-				mapWidth = Integer.parseInt(JOptionPane.showInputDialog(Manager.getJFrame(), "Map Width (a number)"));
-				successful = true;
+				String input = JOptionPane.showInputDialog(Manager.getJFrame(), "Map Width (25-100)");
+				if (input == null) {
+					returnToMenu();
+					return;
+				}
+				mapWidth = Integer.parseInt(input);
+				if (mapWidth <= 100 && mapWidth >= 25) {
+					successful = true;
+				}
 			}catch (Exception e) {}
 		}
 		
@@ -74,8 +82,15 @@ public class EditorManager extends JPanel {
 		mapHeight = 0;
 		while (!successful) {
 			try {
-				mapHeight = Integer.parseInt(JOptionPane.showInputDialog(Manager.getJFrame(), "Map Height (a number)"));
-				successful = true;
+				String input = JOptionPane.showInputDialog(Manager.getJFrame(), "Map Height (25-100)");
+				if (input == null) {
+					returnToMenu();
+					return;
+				}
+				mapHeight = Integer.parseInt(input);
+				if (mapHeight <= 100 && mapHeight >= 25) {
+					successful = true;
+				}
 			}catch (Exception e) {}
 		}
 		
@@ -173,7 +188,7 @@ public class EditorManager extends JPanel {
 					successful = FileManager.saveNewMap(name, boxes, backgroundColor, colliders, mapWidth, mapHeight, enemySpawn, playerSpawn);
 				}
 				
-				System.exit(0);
+				returnToMenu();
 			}
 		});
 		toolsPanel.add(saveButton);
@@ -251,6 +266,12 @@ public class EditorManager extends JPanel {
 				});
 			}
 		}
+	}
+	
+	private void returnToMenu() {
+		Manager.setEditorManager(null);
+		Manager.setMenuManager(new MenuManager());
+		Manager.setPanel(Manager.getMenuManager());
 	}
 	
 }

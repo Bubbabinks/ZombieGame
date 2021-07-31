@@ -44,7 +44,7 @@ public class Player extends Box implements MouseMotionListener, MouseListener, P
 		if (fire) {
 			new Projectile(x + (double)(Manager.BOX_SIZE/4) + (Math.cos(r)*(projectileOffset+Manager.BOX_SIZE/2)),
 					y + (double)(Manager.BOX_SIZE/4) + (Math.sin(r)*(projectileOffset+Manager.BOX_SIZE/2)), Color.YELLOW, r, 20);
-			fire = false;
+			fire = false; //coment me out to make auto fire
 		}
 		int v = 0;
 		int h = 0;

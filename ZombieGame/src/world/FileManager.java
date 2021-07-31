@@ -26,45 +26,40 @@ public class FileManager {
 	
 	private static HashMap<String, ArrayList<String>> worlds = new HashMap<String, ArrayList<String>>();
 	
-	private static boolean initHasRan = false;
-	
 	public static void init() {
-		if (!initHasRan) {
-			File currentFile = new File(MAIN_FOLDER);
-			if (!currentFile.exists()) {
-				currentFile.mkdir();
-			}
+		File currentFile = new File(MAIN_FOLDER);
+		if (!currentFile.exists()) {
+			currentFile.mkdir();
+		}
+		currentFile = new File(WORLDS_FOLDER);
+		if (!currentFile.exists()) {
+			currentFile.mkdir();
+		}
+		if (currentFile.listFiles().length == 0) {
+			currentFile = new File(WORLDS_FOLDER+"/default");
+			currentFile.mkdir();
+			try {
+				Files.copy(new FileManager().getClass().getClassLoader().getResourceAsStream("default_world/0.map"), new File(currentFile.toPath()+"/0.map").toPath(), (CopyOption)StandardCopyOption.REPLACE_EXISTING);
+			} catch (IOException e) {}
 			currentFile = new File(WORLDS_FOLDER);
-			if (!currentFile.exists()) {
-				currentFile.mkdir();
-			}
-			if (currentFile.listFiles().length == 0) {
-				currentFile = new File(WORLDS_FOLDER+"/default");
-				currentFile.mkdir();
-				try {
-					Files.copy(Manager.getGameManager().getClass().getClassLoader().getResourceAsStream("default_world/0.map"), new File(currentFile.toPath()+"/0.map").toPath(), (CopyOption)StandardCopyOption.REPLACE_EXISTING);
-				} catch (IOException e) {}
-				currentFile = new File(WORLDS_FOLDER);
-			}
-			for (File file: currentFile.listFiles()) {
-				File mapFile = new File(file.toString()+"/0.map");
-				if (file.isDirectory()) {
-					if (mapFile.exists()) {
-						ArrayList<String> lines = new ArrayList<String>();
-						try {
-							BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(mapFile)));
-							String line = "";
-							while ((line = reader.readLine()) != null) {
-								lines.add(line);
-							}
-							reader.close();
-						} catch (FileNotFoundException e) {} catch (IOException e) {}
-						worlds.put(lines.get(0), lines);
-					}
+		}
+		for (File file: currentFile.listFiles()) {
+			File mapFile = new File(file.toString()+"/0.map");
+			if (file.isDirectory()) {
+				if (mapFile.exists()) {
+					ArrayList<String> lines = new ArrayList<String>();
+					try {
+						BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(mapFile)));
+						String line = "";
+						while ((line = reader.readLine()) != null) {
+							lines.add(line);
+						}
+						reader.close();
+					} catch (FileNotFoundException e) {} catch (IOException e) {}
+					worlds.put(lines.get(0), lines);
 				}
-				
 			}
-			initHasRan = true;
+			
 		}
 	}
 	

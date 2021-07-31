@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 
 import editor.EditorManager;
 import game.GameManager;
+import menu.MenuManager;
 
 public class Manager {
 	
@@ -25,6 +26,7 @@ public class Manager {
 	private static JFrame frame;
 	private static GameManager gameManager;
 	private static EditorManager editorManager;
+	private static MenuManager menuManager;
 	
 	public static void main(String[] args) {
 		frame = new JFrame("Zombie Game");
@@ -32,12 +34,8 @@ public class Manager {
 		frame.setResizable(false);
 		frame.setLayout(new BorderLayout());
 		
-		gameManager = new GameManager();
-		gameManager.generateMap();
-		setPanel(gameManager);
-		
-		//editorManager = new EditorManager();
-		//setPanel(editorManager);
+		menuManager = new MenuManager();
+		setPanel(menuManager);
 		
 		frame.setVisible(true);
 	}
@@ -53,6 +51,26 @@ public class Manager {
 	
 	public static GameManager getGameManager() {
 		return gameManager;
+	}
+	
+	public static MenuManager getMenuManager() {
+		return menuManager;
+	}
+	
+	public static EditorManager getEditorManager() {
+		return editorManager;
+	}
+	
+	public static void setGameManager(GameManager gameManager) {
+		Manager.gameManager = gameManager;
+	}
+	
+	public static void setEditorManager(EditorManager editorManager) {
+		Manager.editorManager = editorManager;
+	}
+	
+	public static void setMenuManager(MenuManager menuManager) {
+		Manager.menuManager = menuManager;
 	}
 	
 	public static JFrame getJFrame() {
