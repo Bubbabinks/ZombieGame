@@ -35,7 +35,13 @@ public class FileManager {
 		if (!currentFile.exists()) {
 			currentFile.mkdir();
 		}
-		if (currentFile.listFiles().length == 0) {
+		int directorCount = 0;
+		for (File file: currentFile.listFiles()) {
+			if (file.isDirectory()) {
+				directorCount++;
+			}
+		}
+		if (directorCount == 0) {
 			currentFile = new File(WORLDS_FOLDER+"/default");
 			currentFile.mkdir();
 			try {

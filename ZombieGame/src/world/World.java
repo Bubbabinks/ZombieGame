@@ -1,5 +1,6 @@
 package world;
 
+import game.GameManager;
 import game.Player;
 import main.Manager;
 
@@ -11,7 +12,7 @@ public class World {
 	public World(String worldName) {
 		FileManager.init();
 		map = new Map(worldName);
-		player = new Player(Manager.WINDOW_WIDTH/2-Manager.BOX_SIZE/2, Manager.WINDOW_HEIGHT/2-Manager.BOX_SIZE/2);
+		player = new Player(Manager.WINDOW_WIDTH/2-GameManager.BOX_SIZE/2, Manager.WINDOW_HEIGHT/2-GameManager.BOX_SIZE/2);
 	}
 	
 	public Player getPlayer() {

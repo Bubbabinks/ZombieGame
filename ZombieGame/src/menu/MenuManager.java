@@ -55,6 +55,7 @@ public class MenuManager extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				Manager.setEditorManager(new EditorManager());
 				if (Manager.getMenuManager() == menuManager) {
+					Manager.getJFrame().setTitle("Edtior");
 					Manager.setPanel(Manager.getEditorManager());
 				}
 			}

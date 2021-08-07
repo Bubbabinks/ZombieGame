@@ -1,5 +1,6 @@
 package game;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
@@ -21,6 +22,17 @@ public class GameManager extends JPanel {
 	
 	private static final long serialVersionUID = 1L;
 	
+	public static final int FPS = 60;
+	public static final int BOX_SIZE = 40;
+	
+	public static final Color GAME_ENEMY = new Color(121, 63, 73);
+	public static final double PLAYER_SPEED = 5;
+	public static final double PLAYER_SPRINT_MULTIPLIER = 1.75;
+	public static final double SLOW_ENEMY_SPEED = 2;
+	public static final boolean AUTO_FIRE = true;
+	
+	public static final int SECONDS_ENEMY_SPAWN = 3;
+	
 	private String worldName;
 	
 	private World world;
@@ -29,13 +41,15 @@ public class GameManager extends JPanel {
 	private boolean excapePressed = false;
 	private boolean pause = false;
 	
-	private List<Box> boxes = new ArrayList<Box>();
+	private List<ShiftingObject> shiftingObjects = new ArrayList<ShiftingObject>();
 	private List<Render> renders = new ArrayList<Render>();
 	private List<menu.Render> pauseMenu = new ArrayList<menu.Render>();
 	private List<PhysicsUpdate> physicsUpdaters = new ArrayList<PhysicsUpdate>();
 	
 	public GameManager(String worldName) {
 		this.worldName = worldName;
+		Enemy.enemys.clear();
+		Collider.clear();
 		addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
 				super.keyPressed(e);
@@ -61,10 +75,13 @@ public class GameManager extends JPanel {
 			}
 		});
 		setPreferredSize(new Dimension(Manager.WINDOW_WIDTH, Manager.WINDOW_HEIGHT));
-		gameLoop = new Timer(1000/Manager.FPS, new ActionListener() {
+		gameLoop = new Timer(1000/FPS, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				for (int i=0; i<physicsUpdaters.size(); i++) {
-					physicsUpdaters.get(i).update();
+					try {
+						physicsUpdaters.get(i).update();
+					}catch (Exception e1) {}
+					
 				}
 				repaint();
 			}
@@ -85,14 +102,19 @@ public class GameManager extends JPanel {
 		quitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (pause) {
-					gameLoop.stop();
-					Manager.setGameManager(null);
-					Manager.setMenuManager(new MenuManager());
-					Manager.setPanel(Manager.getMenuManager());
+					closeToMenu();
 				}
 			}
 		});
 		pauseMenu.add(quitButton);
+	}
+	
+	public void closeToMenu() {
+		Manager.getJFrame().setTitle("Zombies");
+		gameLoop.stop();
+		Manager.setGameManager(null);
+		Manager.setMenuManager(new MenuManager());
+		Manager.setPanel(Manager.getMenuManager());
 	}
 	
 	public void generateMap() {
@@ -108,8 +130,8 @@ public class GameManager extends JPanel {
 		physicsUpdaters.add(physicsUpdate);
 	}
 	
-	public void addBox(Box box) {
-		boxes.add(box);
+	public void addShiftingObject(ShiftingObject shiftingObject) {
+		shiftingObjects.add(shiftingObject);
 	}
 	
 	public void removeRenderer(Render render) {
@@ -120,8 +142,8 @@ public class GameManager extends JPanel {
 		physicsUpdaters.remove(physicsUpdate);
 	}
 	
-	public void removeBox(Box box) {
-		boxes.remove(box);
+	public void removeShiftingObject(ShiftingObject shiftingObject) {
+		shiftingObjects.remove(shiftingObject);
 	}
 	
 	public World getWorld() {
@@ -129,9 +151,9 @@ public class GameManager extends JPanel {
 	}
 	
 	public void shiftboxes(double xShift, double yShift) {
-		for (int i=0; i<boxes.size(); i++) {
-			boxes.get(i).setX(boxes.get(i).getX()+xShift);
-			boxes.get(i).setY(boxes.get(i).getY()+yShift);
+		for (int i=0; i<shiftingObjects.size(); i++) {
+			shiftingObjects.get(i).setX(shiftingObjects.get(i).getX()+xShift);
+			shiftingObjects.get(i).setY(shiftingObjects.get(i).getY()+yShift);
 		}
 	}
 	

@@ -7,6 +7,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
 import main.Manager;
+import menu.MenuManager;
 
 public class Player extends Box implements MouseMotionListener, MouseListener, PhysicsUpdate {
 	
@@ -24,7 +25,7 @@ public class Player extends Box implements MouseMotionListener, MouseListener, P
 		Manager.getGameManager().addMouseListener(this);
 		Manager.getGameManager().addKeyListener(keyManager);
 		Manager.getGameManager().addPhysicsUpdate(this);
-		Manager.getGameManager().removeBox(this);
+		Manager.getGameManager().removeShiftingObject(this);
 	}
 
 	public void mouseDragged(MouseEvent e) {
@@ -41,16 +42,24 @@ public class Player extends Box implements MouseMotionListener, MouseListener, P
 	public void keyReleased(KeyEvent e) {}
 
 	public void update() {
+		for (Enemy enemy: Enemy.enemys) {
+			if (Collider.dynamicCollision(this, GameManager.BOX_SIZE, enemy, GameManager.BOX_SIZE)) {
+				Manager.getGameManager().closeToMenu();
+				return;
+			}
+		}
 		if (fire) {
-			new Projectile(x + (double)(Manager.BOX_SIZE/4) + (Math.cos(r)*(projectileOffset+Manager.BOX_SIZE/2)),
-					y + (double)(Manager.BOX_SIZE/4) + (Math.sin(r)*(projectileOffset+Manager.BOX_SIZE/2)), Color.YELLOW, r, 20);
-			fire = false; //coment me out to make auto fire
+			new Projectile(x + (double)(GameManager.BOX_SIZE/4) + (Math.cos(r)*(projectileOffset+GameManager.BOX_SIZE/2)),
+					y + (double)(GameManager.BOX_SIZE/4) + (Math.sin(r)*(projectileOffset+GameManager.BOX_SIZE/2)), Color.YELLOW, r, 20);
+			if (!GameManager.AUTO_FIRE) {
+				fire = false;
+			}
 		}
 		int v = 0;
 		int h = 0;
 		double sprint = 1;
 		if (keyManager.input(KeyEvent.VK_SHIFT)) {
-			sprint = Manager.PLAYER_SPRINT_MULTIPLIER;
+			sprint = GameManager.PLAYER_SPRINT_MULTIPLIER;
 		}
 		if (keyManager.input(KeyEvent.VK_W)) {
 			v++;
@@ -65,11 +74,28 @@ public class Player extends Box implements MouseMotionListener, MouseListener, P
 			h--;
 		}
 		if (h == 0) {
-			Manager.getGameManager().shiftboxes(0, Manager.PLAYER_SPEED * v * sprint);
+			if (!Collider.checkCollision(x, y - (GameManager.PLAYER_SPEED * v * sprint), GameManager.BOX_SIZE)) {
+				Manager.getGameManager().shiftboxes(0, GameManager.PLAYER_SPEED * v * sprint);
+			}else if (!Collider.checkCollision(x, y - v, GameManager.BOX_SIZE)) {
+				Manager.getGameManager().shiftboxes(0, v);
+			}
 		}else if (v == 0) {
-			Manager.getGameManager().shiftboxes(Manager.PLAYER_SPEED * h * sprint, 0);
+			if (!Collider.checkCollision(x - (GameManager.PLAYER_SPEED * h * sprint), y, GameManager.BOX_SIZE)) {
+				Manager.getGameManager().shiftboxes(GameManager.PLAYER_SPEED * h * sprint, 0);
+			}else if (!Collider.checkCollision(x - h, y, GameManager.BOX_SIZE)) {
+				Manager.getGameManager().shiftboxes(h, 0);
+			}
 		}else {
-			Manager.getGameManager().shiftboxes(Manager.PLAYER_SPEED * h * DIAGONAL * sprint, Manager.PLAYER_SPEED * v * DIAGONAL * sprint);
+			if (!Collider.checkCollision(x - (GameManager.PLAYER_SPEED * h * DIAGONAL * sprint), y - (GameManager.PLAYER_SPEED * v * DIAGONAL * sprint), GameManager.BOX_SIZE)) {
+				Manager.getGameManager().shiftboxes(GameManager.PLAYER_SPEED * h * DIAGONAL * sprint, GameManager.PLAYER_SPEED * v * DIAGONAL * sprint);
+			}else if (!Collider.checkCollision(x - h, y, GameManager.BOX_SIZE)) {
+				Manager.getGameManager().shiftboxes(h, 0);
+				if (!Collider.checkCollision(x, y - v, GameManager.BOX_SIZE)) {
+					Manager.getGameManager().shiftboxes(0, v);
+				}
+			}else if (!Collider.checkCollision(x, y - v, GameManager.BOX_SIZE)) {
+				Manager.getGameManager().shiftboxes(0, v);
+			}
 		}
 	}
 

@@ -5,9 +5,9 @@ import java.awt.Graphics;
 
 import main.Manager;
 
-public class Box implements Render {
+public class Box implements Render, ShiftingObject {
 	
-	public static double A = (((double)Manager.BOX_SIZE)/(Math.cos(0.785398)*2d));
+	public static double A = (((double)GameManager.BOX_SIZE)/(Math.cos(0.785398)*2d));
 	
 	protected double startingX, startingY;
 	
@@ -25,7 +25,7 @@ public class Box implements Render {
 		this.color = color;
 		r = 0;
 		Manager.getGameManager().addRenderer(this);
-		Manager.getGameManager().addBox(this);
+		Manager.getGameManager().addShiftingObject(this);
 	}
 	
 	public Box(double x, double y, Color color, int size) {
@@ -37,7 +37,7 @@ public class Box implements Render {
 		customA = (((double)size)/(Math.cos(0.785398)*2d));
 		r = 0;
 		Manager.getGameManager().addRenderer(this);
-		Manager.getGameManager().addBox(this);
+		Manager.getGameManager().addShiftingObject(this);
 	}
 	
 	public void setX(double x) {
@@ -104,10 +104,10 @@ public class Box implements Render {
 			}
 		}else {
 			if (r == 0) {
-				g.fillRect((int)x, (int)y, Manager.BOX_SIZE, Manager.BOX_SIZE);
+				g.fillRect((int)x, (int)y, GameManager.BOX_SIZE, GameManager.BOX_SIZE);
 			}else {
-				double xOffset = x + (double)(Manager.BOX_SIZE/2);
-				double yOffset = y + (double)(Manager.BOX_SIZE/2);
+				double xOffset = x + (double)(GameManager.BOX_SIZE/2);
+				double yOffset = y + (double)(GameManager.BOX_SIZE/2);
 				int[] xPoints = new int[] {
 						(int)((Math.cos(r+0.7853982)*A) + xOffset),
 						(int)((Math.cos(r+2.356194)*A) + xOffset),
@@ -128,11 +128,11 @@ public class Box implements Render {
 	}
 	
 	public void pointTowards(double x, double y) {
-		r = Math.atan2((y - (this.y+(double)(Manager.BOX_SIZE/2))), (x - (this.x+(double)(Manager.BOX_SIZE/2))));
+		r = Math.atan2((y - (this.y+(double)(GameManager.BOX_SIZE/2))), (x - (this.x+(double)(GameManager.BOX_SIZE/2))));
 	}
 	
 	public void Destroy() {
 		Manager.getGameManager().removeRenderer(this);
-		Manager.getGameManager().removeBox(this);
+		Manager.getGameManager().removeShiftingObject(this);
 	}
 }
